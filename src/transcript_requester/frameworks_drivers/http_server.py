@@ -21,8 +21,8 @@ class TranscriptRequestHandler(BaseHTTPRequestHandler):
             self._send_json(400, {"error": str(error)})
             return
 
-        status_code, response_body = request_transcript_controller.handle(body)
-        self._send_json(status_code, response_body)
+        view_model = request_transcript_controller.handle(body)
+        self._send_json(view_model.status_code, view_model.body)
 
     def _read_json_body(self) -> dict[str, Any]:
         content_length = int(self.headers.get("Content-Length", "0"))
