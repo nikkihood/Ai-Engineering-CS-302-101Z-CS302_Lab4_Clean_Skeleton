@@ -15,7 +15,9 @@ class TestingApiTests(unittest.TestCase):
         )
         api = TestingApi(initial_requests=[request])
 
+        self.assertEqual(request, api._gateway.find_by_id("existing"))
         api.seed([])
+        self.assertIsNone(api._gateway.find_by_id("existing"))
         view_model = api.request_transcript(
             RequestTranscriptInput(source_url=" ")
         )
