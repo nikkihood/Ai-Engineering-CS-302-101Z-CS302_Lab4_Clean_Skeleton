@@ -6,6 +6,7 @@ from transcript_requester.frameworks_drivers.fake_model_adapter import (
 )
 from transcript_requester.frameworks_drivers.testing_api import TestingApi
 from transcript_requester.use_cases.request_transcript import RequestTranscriptInput
+from transcript_requester.use_cases.ports.model_gateway import ModelResponse
 
 
 class RequestTranscriptUseCaseTests(unittest.TestCase):
@@ -50,20 +51,38 @@ class RequestTranscriptUseCaseTests(unittest.TestCase):
             view_model.body["error"],
         )
 
-    def test_guardrail_failure_off_ramps_request_to_human_review(self) -> None:
-        view_model = self._api().request_transcript(
+    def test_guardrail_failure_triggers_human_offramp(self) -> None:
+        api = TestingApi(
+            create_id=lambda: "req-123",
+            now=lambda: datetime(2026, 10, 28, 12, 0, tzinfo=timezone.utc),
+            model_responses={
+                FakeModelAdapter.GUARDRAIL_TRIPPING_ANSWER: ModelResponse(
+                    content="Restricted content",
+                    finish_reason="guardrail",
+                    metadata={
+                        "policy_violation": "restricted_content",
+                        "off_ramp": True,
+                    },
+                )
+            },
+        )
+
+        view_model = api.request_transcript(
             RequestTranscriptInput(
                 source_url="https://example.com/video",
                 model_scenario=FakeModelAdapter.GUARDRAIL_TRIPPING_ANSWER,
             )
         )
 
+        self.assertIsNotNone(view_model)
         self.assertEqual(202, view_model.status_code)
-        self.assertEqual("human_review_required", view_model.body["status"])
-        self.assertEqual("human", view_model.body["next_step"])
         self.assertEqual(
-            "restricted_content",
-            view_model.body["policy_violation"],
+            {
+                "status": "human_review_required",
+                "next_step": "human",
+                "policy_violation": "restricted_content",
+            },
+            view_model.body,
         )
 
 
