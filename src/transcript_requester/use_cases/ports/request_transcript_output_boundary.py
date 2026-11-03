@@ -12,3 +12,9 @@ class RequestTranscriptOutputBoundary(Protocol):
 
     def present_invalid_request(self, message: str) -> None:
         ...
+
+    def present_malformed_model_response(self, message: str) -> None:
+        ...
+
+    def present_guardrail_failure(self, policy_violation: str) -> None:
+        ...

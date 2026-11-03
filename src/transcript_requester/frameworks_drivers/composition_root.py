@@ -6,6 +6,7 @@ from uuid import uuid4
 from transcript_requester.frameworks_drivers.persistence.in_memory_transcript_request_gateway import (
     InMemoryTranscriptRequestGateway,
 )
+from transcript_requester.frameworks_drivers.fake_model_adapter import FakeModelAdapter
 from transcript_requester.interface_adapters.controllers.request_transcript_controller import (
     RequestTranscriptController,
 )
@@ -16,10 +17,12 @@ from transcript_requester.use_cases.request_transcript import RequestTranscript
 
 
 gateway = InMemoryTranscriptRequestGateway()
+model_adapter = FakeModelAdapter()
 request_transcript_presenter = RequestTranscriptPresenter()
 
 request_transcript = RequestTranscript(
     gateway=gateway,
+    model_gateway=model_adapter,
     output_boundary=request_transcript_presenter,
     create_id=lambda: str(uuid4()),
     now=lambda: datetime.now(timezone.utc),

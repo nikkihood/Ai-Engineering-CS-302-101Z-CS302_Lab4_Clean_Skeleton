@@ -50,6 +50,11 @@ The built-in scenarios are `happy_path`, `malformed_answer`, and
 `guardrail_tripping_answer`. Custom scenarios can be supplied as an in-memory
 mapping of `ModelResponse` objects.
 
+`RequestTranscript` treats malformed model output as an upstream error and
+turns guardrail responses into a `human_review_required` result with
+`next_step: "human"`. Its use-case tests invoke it through `TestingApi`, not
+through the console, HTTP server, or controller.
+
 ## Optional HTTP entry point
 
 ```bash
