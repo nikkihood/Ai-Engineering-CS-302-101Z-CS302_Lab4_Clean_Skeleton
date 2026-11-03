@@ -1,6 +1,6 @@
 # Dependency Rule: Test drivers compose concrete adapters around application policies.
 
-from collections.abc import Iterable
+from collections.abc import Iterable, Mapping
 from datetime import datetime, timezone
 from typing import Callable
 from uuid import uuid4
@@ -22,6 +22,7 @@ from transcript_requester.use_cases.request_transcript import (
     RequestTranscript,
     RequestTranscriptInput,
 )
+from transcript_requester.use_cases.ports.model_gateway import ModelResponse
 
 
 class TestingApi:
@@ -33,11 +34,11 @@ class TestingApi:
         create_id: Callable[[], str] = lambda: str(uuid4()),
         now: Callable[[], datetime] = lambda: datetime.now(timezone.utc),
         initial_requests: Iterable[TranscriptRequest] = (),
-        model_adapter: FakeModelAdapter | None = None,
+        model_responses: Mapping[str, ModelResponse] | None = None,
     ) -> None:
         self._gateway = InMemoryTranscriptRequestGateway()
         self._presenter = RequestTranscriptPresenter()
-        self._model_adapter = model_adapter or FakeModelAdapter()
+        self._model_adapter = FakeModelAdapter(responses=model_responses)
         self._request_transcript = RequestTranscript(
             gateway=self._gateway,
             model_gateway=self._model_adapter,
