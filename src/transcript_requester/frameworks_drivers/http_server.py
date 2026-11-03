@@ -22,7 +22,7 @@ class TranscriptRequestHandler(BaseHTTPRequestHandler):
             return
 
         view_model = request_transcript_controller.handle(body)
-        self._send_json(view_model.status_code, view_model.body)
+        self._send_json(view_model.status_code, view_model.data)
 
     def _read_json_body(self) -> dict[str, Any]:
         content_length = int(self.headers.get("Content-Length", "0"))

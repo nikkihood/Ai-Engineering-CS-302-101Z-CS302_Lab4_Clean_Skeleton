@@ -34,7 +34,7 @@ class RequestTranscriptController:
         if not isinstance(source_url, str):
             return RequestTranscriptViewModel(
                 status_code=400,
-                body={"error": "source_url must be a string"},
+                data={"error": "source_url must be a string"},
             )
 
         self._request_transcript.execute(
@@ -45,7 +45,7 @@ class RequestTranscriptController:
         if view_model is None:
             return RequestTranscriptViewModel(
                 status_code=500,
-                body={"error": "No response view model produced"},
+                data={"error": "No response view model produced"},
             )
 
         return view_model

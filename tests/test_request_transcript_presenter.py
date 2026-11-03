@@ -26,11 +26,11 @@ class RequestTranscriptPresenterTests(unittest.TestCase):
         self.assertEqual(201, presenter.view_model.status_code)
         self.assertEqual(
             "2026-10-28T12:00:00+00:00",
-            presenter.view_model.body["requested_at"],
+            presenter.view_model.data["requested_at"],
         )
         self.assertEqual(
             "The requested transcript is ready.",
-            presenter.view_model.body["answer"],
+            presenter.view_model.data["answer"],
         )
 
     def test_invalid_request_output_contains_a_client_error(self) -> None:
@@ -41,7 +41,7 @@ class RequestTranscriptPresenterTests(unittest.TestCase):
         self.assertEqual(400, presenter.view_model.status_code)
         self.assertEqual(
             {"error": "source_url is required"},
-            presenter.view_model.body,
+            presenter.view_model.data,
         )
 
     def test_guardrail_output_requests_human_review(self) -> None:
@@ -50,8 +50,8 @@ class RequestTranscriptPresenterTests(unittest.TestCase):
         presenter.present_guardrail_failure("restricted_content")
 
         self.assertEqual(202, presenter.view_model.status_code)
-        self.assertEqual("human_review_required", presenter.view_model.body["status"])
-        self.assertEqual("human", presenter.view_model.body["next_step"])
+        self.assertEqual("human_review_required", presenter.view_model.data["status"])
+        self.assertEqual("human", presenter.view_model.data["next_step"])
 
 
 if __name__ == "__main__":

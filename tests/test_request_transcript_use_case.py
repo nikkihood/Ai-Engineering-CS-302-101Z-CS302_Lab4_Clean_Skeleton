@@ -22,12 +22,12 @@ class RequestTranscriptUseCaseTests(unittest.TestCase):
         )
 
         self.assertEqual(201, view_model.status_code)
-        self.assertEqual("req-123", view_model.body["id"])
+        self.assertEqual("req-123", view_model.data["id"])
         self.assertEqual(
             "The requested transcript is ready.",
-            view_model.body["answer"],
+            view_model.data["answer"],
         )
-        self.assertEqual("requested", view_model.body["status"])
+        self.assertEqual("requested", view_model.data["status"])
 
     def test_blank_source_url_is_rejected_before_model_processing(self) -> None:
         view_model = self._api().request_transcript(
@@ -35,7 +35,7 @@ class RequestTranscriptUseCaseTests(unittest.TestCase):
         )
 
         self.assertEqual(400, view_model.status_code)
-        self.assertEqual("source_url is required", view_model.body["error"])
+        self.assertEqual("source_url is required", view_model.data["error"])
 
     def test_malformed_model_answer_is_rejected_as_an_upstream_error(self) -> None:
         view_model = self._api().request_transcript(
@@ -48,7 +48,7 @@ class RequestTranscriptUseCaseTests(unittest.TestCase):
         self.assertEqual(502, view_model.status_code)
         self.assertEqual(
             "Model response is not valid JSON",
-            view_model.body["error"],
+            view_model.data["error"],
         )
 
     def test_guardrail_failure_triggers_human_offramp(self) -> None:
@@ -82,7 +82,7 @@ class RequestTranscriptUseCaseTests(unittest.TestCase):
                 "next_step": "human",
                 "policy_violation": "restricted_content",
             },
-            view_model.body,
+            view_model.data,
         )
 
 

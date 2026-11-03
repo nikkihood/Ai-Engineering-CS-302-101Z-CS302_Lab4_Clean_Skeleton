@@ -20,7 +20,7 @@ class RequestTranscriptPresenter(RequestTranscriptOutputBoundary):
     def present_success(self, output_data: RequestTranscriptOutput) -> None:
         self._view_model = RequestTranscriptViewModel(
             status_code=201,
-            body={
+            data={
                 "id": output_data.id,
                 "source_url": output_data.source_url,
                 "requested_at": output_data.requested_at.isoformat(),
@@ -32,19 +32,19 @@ class RequestTranscriptPresenter(RequestTranscriptOutputBoundary):
     def present_invalid_request(self, message: str) -> None:
         self._view_model = RequestTranscriptViewModel(
             status_code=400,
-            body={"error": message},
+            data={"error": message},
         )
 
     def present_malformed_model_response(self, message: str) -> None:
         self._view_model = RequestTranscriptViewModel(
             status_code=502,
-            body={"error": message},
+            data={"error": message},
         )
 
     def present_guardrail_failure(self, policy_violation: str) -> None:
         self._view_model = RequestTranscriptViewModel(
             status_code=202,
-            body={
+            data={
                 "status": "human_review_required",
                 "next_step": "human",
                 "policy_violation": policy_violation,

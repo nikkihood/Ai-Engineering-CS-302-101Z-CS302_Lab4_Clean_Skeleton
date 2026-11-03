@@ -2,7 +2,6 @@
 
 from dataclasses import dataclass
 from datetime import datetime
-import json
 from typing import Callable
 
 from transcript_requester.entities.transcript_request import (
@@ -18,6 +17,7 @@ from transcript_requester.use_cases.ports.model_gateway import ModelGateway
 from transcript_requester.use_cases.ports.transcript_request_gateway import (
     TranscriptRequestGateway,
 )
+from transcript_requester.use_cases.model_answer_parser import ModelAnswerParser
 
 
 @dataclass(frozen=True, slots=True)
@@ -80,7 +80,7 @@ class RequestTranscript(RequestTranscriptInputBoundary):
             return
 
         try:
-            answer = self._parse_model_answer(model_response.content)
+            answer = ModelAnswerParser.parse(model_response.content)
         except ValueError as error:
             self._output_boundary.present_malformed_model_response(str(error))
             return
@@ -95,17 +95,3 @@ class RequestTranscript(RequestTranscriptInputBoundary):
                 answer=answer,
             )
         )
-
-    @staticmethod
-    def _parse_model_answer(content: str) -> str:
-        try:
-            response = json.loads(content)
-        except json.JSONDecodeError as error:
-            raise ValueError("Model response is not valid JSON") from error
-
-        if not isinstance(response, dict) or not isinstance(
-            response.get("answer"), str
-        ):
-            raise ValueError("Model response must include an answer")
-
-        return response["answer"]

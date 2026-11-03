@@ -7,4 +7,4 @@ from typing import Any
 @dataclass(frozen=True, slots=True)
 class RequestTranscriptViewModel:
     status_code: int
-    body: dict[str, Any]
+    data: dict[str, Any]
