@@ -36,6 +36,20 @@ view_model = api.request_transcript(
 )
 ```
 
+For model-facing tests, `transcript_requester.frameworks_drivers.fake_model_adapter.FakeModelAdapter`
+implements the `ModelGateway` port without network access:
+
+```python
+from transcript_requester.frameworks_drivers.fake_model_adapter import FakeModelAdapter
+
+adapter = FakeModelAdapter()
+response = adapter.complete("malformed answer")
+```
+
+The built-in scenarios are `happy_path`, `malformed_answer`, and
+`guardrail_tripping_answer`. Custom scenarios can be supplied as an in-memory
+mapping of `ModelResponse` objects.
+
 ## Optional HTTP entry point
 
 ```bash
