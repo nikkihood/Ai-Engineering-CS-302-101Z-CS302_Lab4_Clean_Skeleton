@@ -1,3 +1,5 @@
+from collections.abc import Iterable
+
 # Dependency Rule: Frameworks and drivers may depend on every inner layer, but inner layers never depend on them.
 
 from transcript_requester.entities.transcript_request import TranscriptRequest
@@ -6,6 +8,9 @@ from transcript_requester.entities.transcript_request import TranscriptRequest
 class InMemoryTranscriptRequestGateway:
     def __init__(self) -> None:
         self._requests: dict[str, TranscriptRequest] = {}
+
+    def seed(self, requests: Iterable[TranscriptRequest]) -> None:
+        self._requests = {request.id: request for request in requests}
 
     def save(self, request: TranscriptRequest) -> None:
         self._requests[request.id] = request
